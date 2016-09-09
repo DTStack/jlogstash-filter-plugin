@@ -1,15 +1,10 @@
 package com.dtstack.logstash.filters;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dtstack.logstash.annotation.Required;
-import com.dtstack.logstash.render.FreeMarkerRender;
-import com.dtstack.logstash.render.TemplateRender;
 
 
 /**
@@ -20,43 +15,33 @@ import com.dtstack.logstash.render.TemplateRender;
  * @author sishu.yss
  *
  */
+@SuppressWarnings("serial")
 public class Add extends BaseFilter {
 	private static final Logger logger = LoggerFactory.getLogger(Add.class.getName());
 
 	@Required(required=true)
-	private static Map<String, String> fields=null;
+	private static Map<String, Object> fields=null;
 	
+	@SuppressWarnings("rawtypes")
 	public Add(Map config) {
 		super(config);
 	}
 
-	private static Map<String, TemplateRender> f;
-
 	public void prepare() {
-		f = new HashMap<String, TemplateRender>();
-		Iterator<Entry<String, String>> it = fields.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, String> entry = it.next();
-			String field = entry.getKey();
-			String value = entry.getValue();
-			try {
-				f.put(field, new FreeMarkerRender(value, value));
-			} catch (IOException e) {
-				logger.error(e.getMessage());
-				System.exit(1);
-			}
-		}
-	};
 
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected Map filter(final Map event) {
-		Iterator<Entry<String, TemplateRender>> it = f.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, TemplateRender> entry = it.next();
-
-			String field = entry.getKey();
-			TemplateRender render = entry.getValue();
-			event.put(field, render.render(event));
+		Set<Map.Entry<String,Object>> sets =fields.entrySet();
+		for(Map.Entry<String,Object> entry:sets){
+			Object value = entry.getValue();
+			String key = entry.getKey();
+			event.put(key, value);
+			if(event.get(value)!=null&&event.get(value) instanceof String){
+				event.put(key, event.get(value));
+			}	
 		}
 		return event;
 	}
