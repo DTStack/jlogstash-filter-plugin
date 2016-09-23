@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dtstack.logstash.annotation.Required;
+//import com.google.common.collect.Lists;
+//import com.google.common.collect.Maps;
 import oi.thekraken.grok.api.Grok;
 import oi.thekraken.grok.api.Match;
 import oi.thekraken.grok.api.exception.GrokException;
@@ -85,12 +87,15 @@ public class JGrok extends BaseFilter {
 			try {
 				grok = new Grok();
 				addPatternToGrok(grok);
-				Set<Map.Entry<String, String>> entrys =patterns.entrySet();
-				for(Map.Entry<String, String> entry:entrys){
-					String key = entry.getKey();
-					grok.addPattern(key, entry.getValue());
-					grok.compile(key);	
-				}
+					Set<Map.Entry<String, String>> entrys =patterns.entrySet();
+					for(Map.Entry<String, String> entry:entrys){
+						String key = entry.getKey();
+						String value = entry.getValue();
+						if(StringUtils.isNotBlank(value)){
+							grok.addPattern(key,value);
+						}
+						grok.compile(key);	
+					}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("grok compile is error: {}",e.getCause());
