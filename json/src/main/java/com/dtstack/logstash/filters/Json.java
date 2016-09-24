@@ -1,10 +1,13 @@
 package com.dtstack.logstash.filters;
 
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.dtstack.logstash.annotation.Required;
 
 /**
@@ -25,30 +28,33 @@ public class Json extends BaseFilter {
     }
 
     @Required(required=true)
-    private static String field;
-    
-    private static String target;
-    
+    private static Map<String,String> fields;
+        
     private String tagOnFailure="JsonParserfail";
 
     public void prepare() {
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     protected Map filter(final Map event) {
-        Object obj = null;
-        if (event.containsKey(field)) {
-            try {
-            	obj =objectMapper.readValue((String)event.get(field), Map.class);
-                if (obj != null) {
-                    if (target == null) {
-                        event.put(field,obj);
-                    } else {
-                        event.put(target, obj);
+        Set<Map.Entry<String, String>>set =fields.entrySet();     
+        for(Map.Entry<String, String> entry:set){
+        	String key = entry.getKey();
+        	String value = entry.getValue();
+            if (event.containsKey(key)) {
+                try {
+                	 Object obj =objectMapper.readValue((String)event.get(key), Map.class);
+                    if (obj != null) {
+                        if (StringUtils.isNotBlank(value)) {
+                            event.put(value,obj);
+                        } else {
+                            event.put(key, obj);
+                        }
                     }
+                } catch (Exception e) {
+                    logger.error("failed to json parse field:" + key,e.getCause());
                 }
-            } catch (Exception e) {
-                logger.error("failed to json parse field: " + field);
             }
         }
         return event;
