@@ -39,7 +39,7 @@ public class Add extends BaseFilter {
 			Object value = entry.getValue();
 			String key = entry.getKey();
 			event.put(key, value);
-			if(event.get(value)!=null&&event.get(value) instanceof String){
+			if(event.get(value)!=null){
 				event.put(key, event.get(value));
 			}	
 		}
