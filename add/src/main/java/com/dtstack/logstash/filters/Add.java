@@ -68,6 +68,7 @@ public class Add extends BaseFilter {
 	                return host.substring(0, colon);  
 	            }  
 	        }  
+			logger.error("getHostName:{}",uhe.getCause());
 	        return "UnknownHost";  
 	    }  
 	}  
@@ -94,4 +95,8 @@ public class Add extends BaseFilter {
 	public static String getTimeStamp(){
 		return DateTime.now().toString();
 	}	
+	
+	public static void main(String[] args){
+		getHostAddress();
+	}
 }
