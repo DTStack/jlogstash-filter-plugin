@@ -57,19 +57,30 @@ public class Add extends BaseFilter {
 		return event;
 	}
 	
+	public static String getHostNameForLiunx() {  
+	    try {  
+	        return (InetAddress.getLocalHost()).getHostName();  
+	    } catch (Exception uhe) {  
+	        String host = uhe.getMessage(); // host = "hostname: hostname"  
+	        if (host != null) {  
+	            int colon = host.indexOf(':');  
+	            if (colon > 0) {  
+	                return host.substring(0, colon);  
+	            }  
+	        }  
+	        return "UnknownHost";  
+	    }  
+	}  
+	  
+	public static String getHostName() {  
+	    if (System.getenv("COMPUTERNAME") != null) {  
+	        return System.getenv("COMPUTERNAME");  
+	    } else {  
+	        return getHostNameForLiunx();  
+	    }  
+	}  
 	
-	private String getHostName(){
-        try {
-			InetAddress ia = InetAddress.getLocalHost();
-			return ia.getHostName();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("getHostName:{}",e.getCause());
-		}   
-        return "localhost";
-	}
-	
-	private String getHostAddress(){
+	public static String getHostAddress(){
         try {
 			InetAddress ia = InetAddress.getLocalHost();
 			return ia.getHostAddress();
@@ -77,10 +88,10 @@ public class Add extends BaseFilter {
 			// TODO Auto-generated catch block
 			logger.error("getHostAddress:{}",e.getCause());
 		}   
-        return "localhost";
+        return "127.0.0.1";
 	}
 	
-	private String getTimeStamp(){
+	public static String getTimeStamp(){
 		return DateTime.now().toString();
 	}	
 }
