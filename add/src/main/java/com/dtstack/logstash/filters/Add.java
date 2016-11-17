@@ -38,21 +38,23 @@ public class Add extends BaseFilter {
 	protected Map filter(final Map event) {
 		Set<Map.Entry<String,Object>> sets =fields.entrySet();
 		for(Map.Entry<String,Object> entry:sets){
-			Object value = entry.getValue();
 			String key = entry.getKey();
-			event.put(key, value);
-			if(event.get(value)!=null){
-				event.put(key, event.get(value));
-			}else if(value instanceof String){
-				String vv =value.toString();
-        		if ("%{hostname}%".equals(vv)){
-        			event.put(key, getHostName());
-        		}else if("%{timestamp}%".equals(vv)){
-        			event.put(key, getTimeStamp());
-        		}else if("%{ip}%".equals(vv)){
-        			event.put(key, getHostAddress());
-        		}
-            }      	
+			if(event.get(key)==null){
+				Object value = entry.getValue();
+				event.put(key, value);
+				if(event.get(value)!=null){
+					event.put(key, event.get(value));
+				}else if(value instanceof String){
+					String vv =value.toString();
+	        		if ("%{hostname}%".equals(vv)){
+	        			event.put(key, getHostName());
+	        		}else if("%{timestamp}%".equals(vv)){
+	        			event.put(key, getTimeStamp());
+	        		}else if("%{ip}%".equals(vv)){
+	        			event.put(key, getHostAddress());
+	        		}
+	            }
+			} 
 		}
 		return event;
 	}
