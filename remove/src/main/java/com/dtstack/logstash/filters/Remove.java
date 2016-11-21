@@ -47,7 +47,7 @@ public class Remove extends BaseFilter {
 			}
 
 		}catch(Exception e){
-			logger.error("{}:Remove error:{}",event,e.getMessage());
+			logger.error("{}:Remove error:{}",event,e.getCause());
 		}
 		return event;
 	}
