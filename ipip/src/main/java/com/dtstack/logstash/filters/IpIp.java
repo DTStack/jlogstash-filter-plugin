@@ -3,16 +3,13 @@ package com.dtstack.logstash.filters;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.dtstack.logstash.annotation.Required;
 import com.dtstack.logstash.filters.BaseFilter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Maps;
 
 /**
  * 
@@ -26,10 +23,6 @@ public class IpIp extends BaseFilter{
 	
 	@Required(required=true)
 	private static Map<String,String> souTar;
-	
-//	public static String source ="clientip";
-//	
-//	public static String target = "ipip";
 	
 	public static int size = 50000;
 	
