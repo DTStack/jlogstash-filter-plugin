@@ -1,3 +1,20 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.dtstack.logstash.filters;
 
 import java.util.HashMap;
@@ -77,22 +94,4 @@ public class DateISO8601 extends BaseFilter {
 		}
 		return event;
 	}
-	
-	
-	public static void main(String[] args){
-		Map<String,Map<String,String>> mm = new HashMap<String,Map<String,String>>();
-		Map<String,String> m1 = new HashMap<String,String>();
-		m1.put("srcFormat", "dd/MMM/yyyy:HH:mm:ss Z");
-		m1.put("locale", "en");
-		m1.put("target", "timestamp");
-		mm.put("timestamp", m1);
-		match = mm;
-		Map<String,Object> event = new HashMap<String,Object>();
-		event.put("timestamp", "25/May/2016:01:10:07 +0800");
-		DateISO8601 dateISO8601 =new DateISO8601(new HashMap<String,Object>());
-		dateISO8601.prepare();
-		dateISO8601.process(event);
-		System.out.println(event);
-	}
-
 }
