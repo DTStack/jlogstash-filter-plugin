@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.dtstack.logstash.filter</groupId>
+  <groupId>com.dtstack.jlogstash.filter</groupId>
   <artifactId>replace</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>replace</name>
@@ -54,5 +54,13 @@
 	</build>
 
   <dependencies>
+
+	  <dependency>
+		  <groupId>com.dtstack</groupId>
+		  <artifactId>jlogstash</artifactId>
+		  <version>1.0.0</version>
+		  <scope>provided</scope>
+	  </dependency>
+
   </dependencies>
 </project>
