@@ -18,6 +18,7 @@
 package com.dtstack.jlogstash.filters;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -130,8 +131,7 @@ public class JGrok extends BaseFilter {
 		InputStreamReader ir = null;
 
 		try {
-			ir = new InputStreamReader(PatternRead.class.getClassLoader()
-					.getResourceAsStream(patternFile));
+			ir = new InputStreamReader(new FileInputStream(patternFile));
 			br = new BufferedReader(ir);
 			String line;
 			// We dont want \n and commented line
@@ -200,5 +200,6 @@ public class JGrok extends BaseFilter {
     	}
     	return event;  
     }
+
 
 }
