@@ -17,9 +17,17 @@
  */
 package com.dtstack.jlogstash.filters;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +48,15 @@ import oi.thekraken.grok.api.exception.GrokException;
  *
  */
 public class JGrok extends BaseFilter {
+
     private static final Logger logger = LoggerFactory.getLogger(JGrok.class.getName());
 
     @Required(required=true)
     private static List<String> srcs;
     
-    @Required(required=true)
     private static Map<String, String> patterns;
+
+    private static String patternFile;
     
     private Grok grok =null;
 
@@ -102,24 +112,78 @@ public class JGrok extends BaseFilter {
 			try {
 				grok = new Grok();
 				addPatternToGrok(grok);
-					Set<Map.Entry<String, String>> entrys =patterns.entrySet();
-					for(Map.Entry<String, String> entry:entrys){
-						String key = entry.getKey();
-						String value = entry.getValue();
-						if(StringUtils.isNotBlank(value)){
-							grok.addPattern(key,value);
-						}
-						grok.compile(key);	
-					}
+				addFromPatternMap();
+				addFromPatternFile();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("grok compile is error: {}",e.getCause());
+				logger.error("grok compile is error:", e);
 				System.exit(1);
 			}
 	
 		}
     }
 
+    private void addFromPatternFile(){
+		if(StringUtils.isBlank(patternFile)){
+			return;
+		}
+
+		BufferedReader br = null;
+		InputStreamReader ir = null;
+
+		try {
+			ir = new InputStreamReader(new FileInputStream(patternFile));
+			br = new BufferedReader(ir);
+			String line;
+			// We dont want \n and commented line
+			Pattern pattern = Pattern.compile("^([A-z0-9_]+)\\s+(.*)$");
+			while ((line = br.readLine()) != null) {
+				Matcher m = pattern.matcher(line);
+				if (m.matches()) {
+					grok.addPattern(m.group(1), m.group(2));
+					grok.compile(m.group(1));
+				}
+			}
+		} catch (Exception e) {
+			logger.error("compile grok pattern from file " + patternFile + " error.", e);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+				if (ir != null) {
+					ir.close();
+				}
+
+			} catch (IOException e) {
+				logger.error("close file io error:", e);
+			}
+		}
+
+		logger.info("add pattern from file:{} success.", patternFile);
+	}
+
+	private void addFromPatternMap(){
+
+    	if(patterns == null){
+    		return;
+		}
+
+    	try{
+			Set<Map.Entry<String, String>> entrys =patterns.entrySet();
+			for(Map.Entry<String, String> entry:entrys){
+				String key = entry.getKey();
+				String value = entry.getValue();
+				if(StringUtils.isNotBlank(value)){
+					grok.addPattern(key,value);
+					grok.compile(key);
+				}
+			}
+		}catch (Exception e){
+    		logger.error("grok compile is error:", e);
+    		System.exit(-1);
+		}
+
+	}
 
     @SuppressWarnings("unchecked")
     @Override
@@ -136,4 +200,6 @@ public class JGrok extends BaseFilter {
     	}
     	return event;  
     }
+
+
 }
