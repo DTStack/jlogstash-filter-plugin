@@ -17,12 +17,17 @@
  */
 package com.dtstack.jlogstash.filters;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.dtstack.jlogstash.annotation.Required;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -78,24 +83,73 @@ public class Remove extends BaseFilter {
 		}
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	private void removeNull(Map event,int index){
-    	Iterator<Map.Entry<String, Object>> sets = event.entrySet().iterator();	
-    	while(sets.hasNext()){
-    		Map.Entry<String, Object> entry = sets.next();
-    		String key =entry.getKey();
-    		if(index==0){
-    			if(fields.contains(key)){
-    				sets.remove();
-    				continue;
-    			}
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//	private void removeNull(Map event,int index){
+//    	Iterator<Map.Entry<String, Object>> sets = event.entrySet().iterator();	
+//    	while(sets.hasNext()){
+//    		Map.Entry<String, Object> entry = sets.next();
+//    		String key =entry.getKey();
+//    		if(index==0){
+//    			if(fields.contains(key)){
+//    				sets.remove();
+//    				continue;
+//    			}
+//    		}
+//    		Object obj = entry.getValue();
+//    		if(obj==null||"".equals(obj.toString().trim())){
+//    			sets.remove();
+//    		}else if(obj instanceof Map){
+//    			removeNull((Map)obj,1);
+//    		}	
+//    	}
+//    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private void removeNull(Object event,int index){
+    	if(event instanceof Map){
+        	Iterator<Map.Entry<String, Object>> sets = ((Map)event).entrySet().iterator();	
+        	while(sets.hasNext()){
+        		Map.Entry<String, Object> entry = sets.next();
+        		String key =entry.getKey();
+        		if(index==0){
+        			if(fields.contains(key)){
+        				sets.remove();
+        				continue;
+        			}
+        		}
+        		Object obj = entry.getValue();
+        		if(obj==null||"".equals(obj.toString().trim())){
+        			sets.remove();
+        		}else if(obj instanceof Map){
+        			removeNull((Map)obj,1);
+        		}else if(obj instanceof List){
+            		for(Object objj:(List)obj){
+            			removeNull(objj,1);
+            		}
+            	}	
+        	}
+    	}else if(event instanceof List){
+    		for(Object obj:(List)event){
+    			removeNull(obj,1);
     		}
-    		Object obj = entry.getValue();
-    		if(obj==null||"".equals(obj.toString().trim())){
-    			sets.remove();
-    		}else if(obj instanceof Map){
-    			removeNull((Map)obj,1);
-    		}	
     	}
     }
+    
+//    public static void main(String[] args){
+//    	Remove.fields = Lists.newArrayList("fdsfsd");
+//    	Remove.removeNUll = false;
+//    	Map<String,Object> event  = new HashMap<String,Object>();
+//    	List<Map<String,Object>> ll = Lists.newArrayList();
+//    	Map<String,Object> gg = Maps.newHashMap();
+//    	gg.put("gdgd", null);
+//    	gg.put("gdgdggg", "hfdgdf");
+//    	ll.add(gg);
+//    	event.put("fdsfsd","fdfsd");
+//    	event.put("gsdfsf", null);
+//    	event.put("binds",ll);
+//    	Remove remove = new Remove(new HashMap<String,Object>());
+//    	remove.prepare();
+//    	remove.filter(event);
+//    	System.out.println(event);
+//    }
 }
