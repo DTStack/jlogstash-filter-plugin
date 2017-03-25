@@ -17,13 +17,14 @@
  */
 package com.dtstack.jlogstash.filters;
 
+import com.dtstack.jlogstash.annotation.Required;
+import com.dtstack.jlogstash.render.FreeMarkerRender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.dtstack.jlogstash.annotation.Required;
-import com.dtstack.jlogstash.render.FreeMarkerRender;
 
 /**
  * 
@@ -45,6 +46,8 @@ public class Replace extends BaseFilter {
 	
 	@Required(required=true)
 	private static String value;
+
+	private FreeMarkerRender render;
 
 	public void prepare() {
 		try {
