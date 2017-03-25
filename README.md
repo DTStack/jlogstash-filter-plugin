@@ -46,3 +46,15 @@
 
   fields: 必填 map 结构 example {"messgae":"messgae1"} 源属性是message  目标属性message1，没有目标属性可以为“”
    
+#Java:
+  code: 必填，String类型 。
+  
+  示例：
+  ```
+  filters:
+     - Java:
+         code: '
+             Object name = event.get("NAME");
+             event.put("XM", name);
+         '
+  ```
