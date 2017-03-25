@@ -20,6 +20,9 @@ package com.dtstack.jlogstash.filters;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,8 @@ import com.google.common.cache.CacheBuilder;
 public class IpIp extends BaseFilter{
 		
 	private static Logger logger = LoggerFactory.getLogger(IpIp.class);
+
+	private Pattern ipv4Pattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}.\\d{1,3}.\\d{1,3}$");
 	
 	@Required(required=true)
 	private static Map<String,String> souTar;
@@ -72,6 +77,11 @@ public class IpIp extends BaseFilter{
 				  if(StringUtils.isNoneBlank(ip)){
 					  Map<String,Object> re =(Map<String,Object>)cache.getIfPresent(ip);
 					  if(re==null){
+
+					  	  if(!checkIsIpFormat(ip)){
+					  	  	  continue;
+						  }
+
 						  String[] result =IP.find(ip);
 						  if(result!=null){
 							  re = new HashMap<String,Object>();
@@ -88,5 +98,10 @@ public class IpIp extends BaseFilter{
 			logger.error("DtLogIpIp_filter_error", e);
 		 }
 		return event;
+	}
+
+	public boolean checkIsIpFormat(String ipStr){
+		Matcher matcher = ipv4Pattern.matcher(ipStr);
+		return matcher.find();
 	}
 }
