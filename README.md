@@ -38,7 +38,7 @@
 
   srcs:必填 list 结构，需要grok解析的属性["e","b"]
   
-  patterns:必填 map结构，需要的正则表达式，{"pattern":"[0-9A-B]"}
+  patterns:必填 map结构，需要的正则表达式，{"pattern":"(?<fromApp>[0-9A-B])"}
   
   如果:grok自带的已经有了,正则表达式不需要写，列如:{"%{COMBINEDAPACHELOG}":""}
 
