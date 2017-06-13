@@ -58,3 +58,11 @@
              event.put("XM", name);
          '
   ```
+
+# Performance:
+
+   interval: 数据刷入文件的间隔时间，默认30秒
+
+   timeZone: 时区 默认UTC
+
+   path: 文件路径（home/admin/jlogserver/logs/srsyslog-performance-%{+YYYY.MM.dd}.txt）必填
