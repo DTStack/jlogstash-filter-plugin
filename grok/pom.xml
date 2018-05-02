@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.dtstack.jlogstash.filter</groupId>
-  <artifactId>grok</artifactId>
+  <artifactId>jgrok</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
-  <name>grok</name>
+  <name>jgrok</name>
   <url>http://maven.apache.org</url>
 
   <properties>
