@@ -36,11 +36,9 @@
 
 # JGrok:
 
-  srcs:必填 list 结构，需要grok解析的属性["e","b"]
+  srcs:必填 list 结构，需要通过jgrok解析的字段（["ip"]）
   
-  patterns:必填 map结构，需要的正则表达式，{"pattern":"(?\<fromApp\>[0-9A-B])"}
-  
-  如果:grok自带的已经有了,正则表达式不需要写，列如:{"%{COMBINEDAPACHELOG}":""}
+  patterns:必填 map结构，自定义的正则表达式，{"ip":"(?\<fromApp\>[0-9A-B])"} 如果:grok自带的已经有了,正则表达式不需要写，列如:{"%{COMBINEDAPACHELOG}":""}
 
 # Json:
 
