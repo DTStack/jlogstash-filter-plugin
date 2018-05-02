@@ -26,14 +26,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dtstack.jlogstash.annotation.Required;
-//import com.google.common.collect.Lists;
-//import com.google.common.collect.Maps;
 import oi.thekraken.grok.api.Grok;
 import oi.thekraken.grok.api.Match;
 import oi.thekraken.grok.api.exception.GrokException;
@@ -95,7 +91,7 @@ public class JGrok extends BaseFilter {
 		}
 	}
 	
-	private void addPatternToGrok(Grok grok) throws GrokException{
+	private void addPatternToGrok() throws GrokException{
 		Map<String,String> patterns =PatternRead.getPatterns();
 		if(patterns.size()>0){
 			Set<Map.Entry<String, String>> sets =patterns.entrySet();
@@ -107,13 +103,14 @@ public class JGrok extends BaseFilter {
     
 
     @SuppressWarnings("unchecked")
+	@Override
     public void prepare() {
 		if(grok==null){
 			try {
 				grok = new Grok();
-				addPatternToGrok(grok);
-				addFromPatternMap();
+				addPatternToGrok();
 				addFromPatternFile();
+				addFromPatternMap();
 			} catch (Exception e) {
 				logger.error("grok compile is error:", e);
 				System.exit(1);
@@ -140,7 +137,7 @@ public class JGrok extends BaseFilter {
 				Matcher m = pattern.matcher(line);
 				if (m.matches()) {
 					grok.addPattern(m.group(1), m.group(2));
-					grok.compile(m.group(1));
+//					grok.compile(m.group(1));
 				}
 			}
 		} catch (Exception e) {
@@ -175,6 +172,8 @@ public class JGrok extends BaseFilter {
 				String value = entry.getValue();
 				if(StringUtils.isNotBlank(value)){
 					grok.addPattern(key,value);
+					grok.compile(key);
+				}else{
 					grok.compile(key);
 				}
 			}
