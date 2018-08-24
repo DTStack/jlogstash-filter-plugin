@@ -6,3 +6,6 @@ target/*
 .metadata/
 .idea/
 *.iml
+add/src/test/
+dateiso8601/src/test/
+remove/src/test/
