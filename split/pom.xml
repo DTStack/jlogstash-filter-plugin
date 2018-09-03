@@ -7,8 +7,8 @@
 		<version>1.0.0</version>
 	</parent>
 
-  <groupId>com.dtstack.jlogstash.filter</groupId>
-  <artifactId>split</artifactId>
+  <groupId>com.dtstack.jlogstash</groupId>
+	<artifactId>filter.split</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
