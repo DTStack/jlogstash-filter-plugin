@@ -60,10 +60,8 @@ public class SplitStr extends BaseFilter {
 
     @Override
     protected Map filter(Map event) {
-        System.out.println("data:" + event);
         for (Map<String, Object> conf : parseConfig) {
             try{
-                System.out.println("config:" + conf);
                 if (event.get(conf.get(FILE_NAME_KEY)).equals(conf.get(FILE_NAME_VAL_KEY))){
                     List<String> keys = (List<String>) conf.get(KEYS_KEY);
                     String[] items = event.get(conf.get(CONTENT_KEY)).toString().split(conf.get(DELIM_KEY).toString());
