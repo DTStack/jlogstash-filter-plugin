@@ -27,6 +27,7 @@
         <module>ua</module>
         <module>uppercase</module>
         <module>urldecode</module>
+        <module>splitStr</module>
     </modules>
 
     <properties>
