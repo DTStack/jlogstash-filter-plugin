@@ -28,6 +28,7 @@
         <module>uppercase</module>
         <module>urldecode</module>
         <module>splitStr</module>
+        <module>split</module>
     </modules>
 
     <properties>
