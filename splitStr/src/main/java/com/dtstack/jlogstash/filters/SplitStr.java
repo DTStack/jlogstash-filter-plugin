@@ -76,7 +76,7 @@ public class SplitStr extends BaseFilter {
                 }
             }catch (Exception e){
                 logger.error("parse data:" + event);
-                logger.error("parse config:" + conf);
+                logger.error("",e);
             }
         }
         return event;
