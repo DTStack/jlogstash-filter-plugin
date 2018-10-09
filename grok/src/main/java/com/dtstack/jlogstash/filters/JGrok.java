@@ -21,6 +21,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,78 +36,75 @@ import oi.thekraken.grok.api.Grok;
 import oi.thekraken.grok.api.Match;
 import oi.thekraken.grok.api.exception.GrokException;
 
-
 /**
  * 
- * Reason: TODO ADD REASON(可选)
- * Date: 2016年8月31日 下午1:53:24
- * Company: www.dtstack.com
+ * Reason: TODO ADD REASON(可选) Date: 2016年8月31日 下午1:53:24 Company:
+ * www.dtstack.com
+ * 
  * @author sishu.yss
  *
  */
 public class JGrok extends BaseFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JGrok.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(JGrok.class.getName());
 
-    @Required(required=true)
-    private static List<String> srcs;
-    
-    private static Map<String, String> patterns;
+	@Required(required = true)
+	private static List<String> srcs;
 
-    private static String patternFile;
-    
-    private Grok grok =null;
+	private static Map<String, String> patterns;
 
-    public JGrok(Map config) {
-        super(config);
-    }
+	private static String patternFile;
 
+	private Grok grok = null;
 
-    static {
-    	PatternRead.patternRead();
-    }
-		
-	
+	public JGrok(Map config) {
+		super(config);
+	}
+
+	static {
+		PatternRead.patternRead();
+	}
+
 	/**
 	 * 正则解析
+	 * 
 	 * @param event
 	 * @param value
 	 */
-	public  void parserGrok(Map<String,Object> event,String value){
-		try{
-			Map<String,String> patterns11 =grok.getPatterns();
-			Match match =grok.match(value);
+	public void parserGrok(Map<String, Object> event, String value) {
+		try {
+			Map<String, String> patterns11 = grok.getPatterns();
+			Match match = grok.match(value);
 			match.captures();
-			Map<String,Object> map =match.toMap();
-			if(map!=null&&map.size()>0){
-				Set<Map.Entry<String,Object>> sets =map.entrySet();
-				for(Map.Entry<String,Object> set:sets){
+			Map<String, Object> map = match.toMap();
+			if (map != null && map.size() > 0) {
+				Set<Map.Entry<String, Object>> sets = map.entrySet();
+				for (Map.Entry<String, Object> set : sets) {
 					String key = set.getKey();
-					if(!patterns11.containsKey(key)){
+					if (!patterns11.containsKey(key)) {
 						event.put(key, set.getValue());
 					}
 				}
 			}
-		}catch(Exception e){
-		   logger.error("parserGrok_error", e);
+		} catch (Exception e) {
+			logger.error("parserGrok_error", e);
 		}
 	}
-	
-	private void addPatternToGrok() throws GrokException{
-		Map<String,String> patterns =PatternRead.getPatterns();
-		if(patterns.size()>0){
-			Set<Map.Entry<String, String>> sets =patterns.entrySet();
-			for(Map.Entry<String, String> entry:sets){
+
+	private void addPatternToGrok() throws GrokException {
+		Map<String, String> patterns = PatternRead.getPatterns();
+		if (patterns.size() > 0) {
+			Set<Map.Entry<String, String>> sets = patterns.entrySet();
+			for (Map.Entry<String, String> entry : sets) {
 				grok.addPattern(entry.getKey(), entry.getValue());
 			}
 		}
 	}
-    
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
-    public void prepare() {
-		if(grok==null){
+	public void prepare() {
+		if (grok == null) {
 			try {
 				grok = new Grok();
 				addPatternToGrok();
@@ -115,12 +114,12 @@ public class JGrok extends BaseFilter {
 				logger.error("grok compile is error:", e);
 				System.exit(1);
 			}
-	
-		}
-    }
 
-    private void addFromPatternFile(){
-		if(StringUtils.isBlank(patternFile)){
+		}
+	}
+
+	private void addFromPatternFile() {
+		if (StringUtils.isBlank(patternFile)) {
 			return;
 		}
 
@@ -137,7 +136,7 @@ public class JGrok extends BaseFilter {
 				Matcher m = pattern.matcher(line);
 				if (m.matches()) {
 					grok.addPattern(m.group(1), m.group(2));
-//					grok.compile(m.group(1));
+					// grok.compile(m.group(1));
 				}
 			}
 		} catch (Exception e) {
@@ -159,46 +158,56 @@ public class JGrok extends BaseFilter {
 		logger.info("add pattern from file:{} success.", patternFile);
 	}
 
-	private void addFromPatternMap(){
+	private void addFromPatternMap() {
 
-    	if(patterns == null){
-    		return;
+		if (patterns == null) {
+			return;
 		}
 
-    	try{
-			Set<Map.Entry<String, String>> entrys =patterns.entrySet();
-			for(Map.Entry<String, String> entry:entrys){
+		try {
+			Set<Map.Entry<String, String>> entrys = patterns.entrySet();
+			for (Map.Entry<String, String> entry : entrys) {
 				String key = entry.getKey();
 				String value = entry.getValue();
-				if(StringUtils.isNotBlank(value)){
-					grok.addPattern(key,value);
-					grok.compile(key);
-				}else{
-					grok.compile(key);
-				}
+				if (StringUtils.isNotBlank(value)) {
+					grok.addPattern(key, value);
+					grok.compile("%{" + key + "}");
+				} 
 			}
-		}catch (Exception e){
-    		logger.error("grok compile is error:", e);
-    		System.exit(-1);
+		} catch (Exception e) {
+			logger.error("grok compile is error:", e);
+			System.exit(-1);
 		}
 
 	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Map filter(Map event) {
-    	try{
-    		for(String src:srcs){
-        		Object str = event.get(src);
-        		if(StringUtils.isNotBlank((String)str)){
-        			parserGrok(event,(String)str);
-        		}
-    		}
-    	}catch(Exception e){
-    		logger.error("grok filter is error: {}",e.getCause());
-    	}
-    	return event;  
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map filter(Map event) {
+		try {
+			for (String src : srcs) {
+				Object str = event.get(src);
+				if (StringUtils.isNotBlank((String) str)) {
+					parserGrok(event, (String) str);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("grok filter is error: {}", e.getCause());
+		}
+		return event;
+	}
 
+	public static void main(String[] args) {
+		JGrok g = new JGrok(new HashMap<>());
+		g.patterns = new HashMap<>();
+		g.srcs = Arrays.asList("message");
+		g.patterns.put("message", "(?<time>[\\d]+-[\\d]+-[\\d]+\\s+[\\d]+:[\\d]+:[\\d]+)\\s+(?<level>[\\w\\[]+)\\]\\s+\\[(?<thread>[\\w-]+)\\]\\s+(?<log>[\\w]+)\\s+-\\s+(?<time1>[^\\|]+)\\|(?<name>[^\\|]+)\\|(?<model>[^\\|]+)\\|(?<ip>[\\d]+\\.[\\d]+\\.[\\d]+\\.[^2]+)");
+		g.prepare();
+		Map<String, Object> event = new HashMap<>();
+		event.put("message", "2018-09-28 09:07:03 [INFO] [http-nio-8811-exec-3] operateLog - 2018-09-28 09:07:03|窦丽莎|用户模块|10.1.183.121");
+		g.process(event);
+		System.out.println(event);
+		
+	}
 
 }
